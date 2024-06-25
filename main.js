@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function findBook(bookId) {
-    for (book of books) {
+    for (const book of books) {
       if (book.id === bookId) {
         return book;
       }
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function findBookIndex(bookId) {
     let index = 0;
-    for (book of books) {
+    for (const book of books) {
       if (book.id === bookId) {
         return index;
       }
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function isStorageExist() {
-    if (typeof Storage === undefined) {
+    if (typeof Storage === 'undefined') {
       alert('Browser kamu tidak mendukung local storage');
       return false;
     }
@@ -61,11 +61,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function loadDataFromStorage() {
     const serializedData = localStorage.getItem(STORAGE_KEY);
-
-    let data = JSON.parse(serializedData);
-
-    if (data !== null) {
-      books = data;
+    if (serializedData !== null) {
+      books = JSON.parse(serializedData);
     }
 
     document.dispatchEvent(new Event('ondataloaded'));
@@ -157,10 +154,10 @@ document.addEventListener('DOMContentLoaded', function () {
     );
     books.push(bookObject);
 
-    document.dispatchEvent(new Event('ondatasaved'));
+    updateDataToStorage();
+
     document.dispatchEvent(new Event('ondataloaded'));
 
-    // Show the modal
     modal.style.display = 'block';
   }
 
@@ -170,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (bookTarget == null) return;
 
     bookTarget.isComplete = true;
-    document.dispatchEvent(new Event('ondatasaved'));
+    updateDataToStorage();
     document.dispatchEvent(new Event('ondataloaded'));
   }
 
@@ -180,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (bookTarget == null) return;
 
     bookTarget.isComplete = false;
-    document.dispatchEvent(new Event('ondatasaved'));
+    updateDataToStorage();
     document.dispatchEvent(new Event('ondataloaded'));
   }
 
@@ -190,8 +187,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (bookTarget === -1) return;
 
     books.splice(bookTarget, 1);
-    document.dispatchEvent(new Event('ondatasaved'));
+    updateDataToStorage();
     document.dispatchEvent(new Event('ondataloaded'));
+
+    const deleteModal = document.getElementById('bookDeletedModal');
+    deleteModal.style.display = 'block';
   }
 
   bookSubmit.addEventListener('click', function (event) {
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
     incompleteBookshelfList.innerHTML = '';
     completeBookshelfList.innerHTML = '';
 
-    for (book of books) {
+    for (const book of books) {
       const bookElement = createBookElement(book);
       if (!book.isComplete) incompleteBookshelfList.append(bookElement);
       else completeBookshelfList.append(bookElement);
@@ -237,18 +237,6 @@ document.addEventListener('DOMContentLoaded', function () {
       deleteModal.style.display = 'none';
     }
   });
-
-  function removeBook(bookId) {
-    const bookTarget = findBookIndex(bookId);
-
-    if (bookTarget === -1) return;
-
-    books.splice(bookTarget, 1);
-    document.dispatchEvent(new Event('ondatasaved'));
-    document.dispatchEvent(new Event('ondataloaded'));
-
-    deleteModal.style.display = 'block';
-  }
 
   if (isStorageExist()) {
     loadDataFromStorage();
