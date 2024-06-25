@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function addBook() {
     const textBookTitle = document.getElementById('inputBookTitle').value;
     const textBookAuthor = document.getElementById('inputBookAuthor').value;
-    const textBookYear = document.getElementById('inputBookYear').value;
+    const textBookYear = Number(document.getElementById('inputBookYear').value);
     const isBookComplete = document.getElementById(
       'inputBookIsComplete'
     ).checked;
